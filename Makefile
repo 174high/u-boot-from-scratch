@@ -37,7 +37,7 @@ DEFINES		+= -D__ARM32_ARCH__=5 -D__ARM926EJS__
 ASFLAGS		:= -g -ggdb -Wall -O3 -ffreestanding -std=gnu99 $(DEFINES)
 CFLAGS		:= -g -ggdb -Wall -O3 -ffreestanding -std=gnu99 $(DEFINES)
 CXXFLAGS	:= -g -ggdb -Wall -O3 -ffreestanding -std=gnu99 $(DEFINES)
-LDFLAGS		:= -T f1c100s.ld -nostdlib
+LDFLAGS		:= -T arch/arm/cpu/arm926ejs/sunxi/u-boot-spl.lds -nostdlib
 MCFLAGS		:= -march=armv5te -mtune=arm926ej-s -mfloat-abi=soft -marm -mno-thumb-interwork
 
 LIBDIRS		:=

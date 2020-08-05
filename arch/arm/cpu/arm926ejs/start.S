@@ -33,7 +33,7 @@ _start:
 	/* Boot head information for BROM */
 	.long 0xea000016
 	.byte 'e', 'G', 'O', 'N', '.', 'B', 'T', '0'
-	.long 0, __bootloader_size
+	.long 0, 0
 	.byte 'S', 'P', 'L', 2
 	.long 0, 0
 	.long 0, 0, 0, 0, 0, 0, 0, 0
@@ -68,48 +68,6 @@ _fiq:
  * The actual reset code
  */
 reset:
-	/* Save boot params to 0x00000040 */
-	ldr r0, =0x00000040
-	str sp, [r0, #0]
-	str lr, [r0, #4]
-	mrs lr, cpsr
-	str lr, [r0, #8]
-	mrc p15, 0, lr, c1, c0, 0
-	str lr, [r0, #12]
-	mrc p15, 0, lr, c1, c0, 0
-	str lr, [r0, #16]
-
-	/* Check boot type just for fel */
-	mov r0, #0x0
-	ldr r1, [r0, #8]
-	ldr r2, =0x4c45462e
-	cmp r1, r2
-	bne 1f
-	ldr r1, =0x1
-	str r1, [r0, #0x58]
-1:	nop
-
-	/* Enter svc mode and mask interrupts */
-	mrs r0, cpsr
-	bic r0, r0, #0x1f
-	orr r0, r0, #0xd3
-	msr cpsr, r0
-
-	/* Set vector to the low address */
-	mrc p15, 0, r0, c1, c0, 0
-	bic r0, #(1<<13)
-	mcr p15, 0, r0, c1, c0, 0
-
-	/* Copy vector to the correct address */
-	adr r0, _vector
-	mrc p15, 0, r2, c1, c0, 0
-	ands r2, r2, #(1 << 13)
-	ldreq r1, =0x00000000
-	ldrne r1, =0xffff0000
-	ldmia r0!, {r2-r8, r10}
-	stmia r1!, {r2-r8, r10}
-	ldmia r0!, {r2-r8, r10}
-	stmia r1!, {r2-r8, r10}
 
 
 /*
@@ -137,69 +95,7 @@ not_used:
 
 	.align 5
 irq:
-	ldr sp, _stack_irq_end
-	sub sp, sp, #72
-	stmia sp, {r0 - r12}
-	add r8, sp, #60
-	stmdb r8, {sp, lr}^
-	str lr, [r8, #0]
-	mrs r6, spsr
-	str r6, [r8, #4]
-	str r0, [r8, #8]
-	mov r0, sp
-#	bl arm32_do_irq
-	ldmia sp, {r0 - lr}^
-	mov r0, r0
-	ldr lr, [sp, #60]
-	add sp, sp, #72
-	subs pc, lr, #4
 
 	.align 5
 fiq:
-	ldr sp, _stack_irq_end
-	sub sp, sp, #72
-	stmia sp, {r0 - r12}
-	add r8, sp, #60
-	stmdb r8, {sp, lr}^
-	str lr, [r8, #0]
-	mrs r6, spsr
-	str r6, [r8, #4]
-	str r0, [r8, #8]
-	mov r0, sp
-#	bl arm32_do_fiq
-	ldmia sp, {r0 - lr}^
-	mov r0, r0
-	ldr lr, [sp, #60]
-	add sp, sp, #72
-	subs pc, lr, #4
 
-/*
- * The location of section
- */
- 	.align 4
-_image_start:
-	.long __image_start
-_image_end:
-	.long __image_end
-_data_shadow_start:
-	.long __data_shadow_start
-_data_shadow_end:
-	.long __data_shadow_end
-_data_start:
-	.long __data_start
-_data_end:
-	.long __data_end
-_bss_start:
-	.long __bss_start
-_bss_end:
-	.long __bss_end
-_stack_und_end:
-	.long __stack_und_end
-_stack_abt_end:
-	.long __stack_abt_end
-_stack_irq_end:
-	.long __stack_irq_end
-_stack_fiq_end:
-	.long __stack_fiq_end
-_stack_srv_end:
-	.long __stack_srv_end

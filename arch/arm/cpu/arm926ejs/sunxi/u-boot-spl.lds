@@ -19,10 +19,12 @@
  *
  * SPDX-License-Identifier:	GPL-2.0+
  */
-MEMORY { .sram : ORIGIN = CONFIG_SPL_TEXT_BASE,\
-		LENGTH = CONFIG_SPL_MAX_SIZE }
-MEMORY { .sdram : ORIGIN = CONFIG_SPL_BSS_START_ADDR, \
-		LENGTH = CONFIG_SPL_BSS_MAX_SIZE }
+MEMORY
+{
+        .sram  : org = 0x60, len = 8M
+        .sdram  : org = 0x80800000, len = 8M
+}
+
 
 OUTPUT_FORMAT("elf32-littlearm", "elf32-littlearm", "elf32-littlearm")
 OUTPUT_ARCH(arm)
@@ -33,8 +35,9 @@ SECTIONS
 	{
 		__start = .;
 		*(.vectors)
-		arch/arm/cpu/arm926ejs/start.o	(.text)
+		build/arch/arm/cpu/arm926ejs/start.o	(.text)
 		*(.text*)
+		*(.note.gnu.build-id)
 	} > .sram
 
 	. = ALIGN(4);
