@@ -25,28 +25,10 @@ SIZE 		  = $(CROSS_COMPILE)size
 
 SRC_C = \
 	main.c \
-	machine/sys-clock.c \
-	machine/sys-dram.c \
-	machine/sys-uart.c \
-	machine/sys-copyself.c \
-	machine/sys-spi-flash.c \
-	machine/sys-mmu.c \
-	machine/exception.c \
-
-# drivers
-SRC_C += \
-	driver/gpio-f1c100s.c \
-	driver/pwm-f1c100s.c \
-	driver/reset-f1c100s.c \
-	lib/malloc.c \
-	lib/dma.c \
-	driver/clk-f1c100s-pll.c \
-	driver/fb-f1c100s.c \
 
 
-SRC_ASM = machine/start.S \
-		  arch/arm32/lib/memcpy.S \
-		  arch/arm32/lib/memset.S \
+SRC_ASM = arch/arm/cpu/arm926ejs/start.S \
+
 
 OBJ = $(addprefix $(BUILD)/, $(SRC_C:.c=.o)) $(addprefix $(BUILD)/, $(SRC_ASM:.S=.o))
 
